@@ -13,7 +13,7 @@ This includes:
 
 (Note that supplementary materials here are not peer-reviewed)
 
-All analysis were performed using `MATLAB`, and the main script used for analysis is `organoidCorrelation.m`. All functions used are within the folder `dependencies`, and should be added to path (along with its subfolders) in order to perform the analysis and visualisations. 
+All analysis were performed using `MATLAB`, and the main scripts used for analysis are `ogranoidProject.m` for spike detection, and `organoidCorrelation` for analysis of functional connectivity. 
 
 
 
