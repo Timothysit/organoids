@@ -1,0 +1,60 @@
+---
+title: "The Organoid Project"
+output: html_notebook
+author: Tim Sit
+---
+
+Here is the analysis done in `R` for The Organoid Project in 2018.
+
+# Spike timing tiling coefficient 
+
+Here I implement the tiling coefficient introduced by Cutts and Eglen (2014) as a way to quantify the correlation between pairs of spike trains.
+
+I have translated their code from C to Matlab, to test if it worked properly, I shall first test it on a hypothetical pair of spike trains: 
+spike train 1 (spike times)
+
+[1, 3, 5, 7]
+
+spike train 2 (spike times)
+
+[2, 3, 6, 10]
+
+Where the total recording time is 10s (From 1 - 11)
+
+Using the spike timing tiling coefficient from the `sjemea` package, from here: https://github.com/sje30/sjemea
+
+```{r}
+library(sjemea)
+a <- c(236.454000000000,
+237.216480000000,
+288.159480000000,
+295.043560000000,
+356.737440000000,
+379.664360000000)
+
+b <- c(236.454000000000,
+236.694080000000,
+237.216520000000,
+288.159480000000,
+295.003560000000,
+295.043560000000,
+328.342160000000,
+356.737440000000,
+379.664320000000,
+691.200600000000)
+
+tiling_coefficient <- tiling.corr(a, b, dt = 0.01, rec.time = c(1/25000, 720))
+```
+
+
+Also note that some people have implemented a slightly modified version of this in `meaRtools`
+
+```{r}
+library(meaRtools)
+
+a = c(1, 0, 1, 0, 1, 0, 1, 0, 0, 0)
+b = c(0, 1, 1, 0, 0, 1, 0, 0, 0, 1)
+sttc(a, b, dt = 1, rec_time = 10)
+
+```
+

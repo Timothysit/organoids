@@ -89,8 +89,13 @@ end  % if ~any
 qq=unique([ii,jj]);
 % minEWt=min(eWt); % MODIFIED BY TS 20180407 to plot from 0 - 1
 % maxEWt=max(eWt);
-minEWt=0; 
-maxEWt=1;
+% minEWt=0; 
+% maxEWt=1;
+
+% MODIFIED BY TS 20180610 to plot from the range I want 
+minEWt = 0.5;
+maxEWt = 1;
+
 eWtRange=maxEWt-minEWt;
 eWeighted=eWtRange>0;
 
@@ -123,19 +128,33 @@ if eWeighted
     hE=[hE,plot(x(:),y(:),'color',edgeMap(kk,:),plotParm{:})];
     % Draw legend bar
     line([legLim(kk),legLim(kk+1)],[legY,legY],'lineWidth',15,'color',edgeMap(kk,:));
+    
+    % TS 20180610: Update legend bar to a specific limit
+    
+    
   end  % for kk
   
   % Draw Legend Label
   % text([legLim(1),legLim(end)],[legY-0.5*yStep,legY-0.5*yStep], ...
-  %   {num2str(minEWt),['  ',num2str(maxEWt)]},'HorizontalAlignment','center','color',[0.5,0.5,0.5]);
+  %    {num2str(minEWt),['  ',num2str(maxEWt)]},'HorizontalAlignment','center','color',[0.5,0.5,0.5]);
   % TS 20180606 The above line is the code to modify to customise the
   % legend for the edge weight colormap 
-  xIndices = round(linspace(1, length(legLim), 11)); % 11 even axes
-  text(legLim(xIndices), repmat(legY - 0.75 * yStep, 1, 11), ... 
-      {'0', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1'}, ... 
-      'HorizontalAlignment','center','color',[0,0,0], 'FontSize',14);
   
+  % For 0 to 1
+  % xIndices = round(linspace(1, length(legLim), 11)); % 11 even axes
+  % text(legLim(xIndices), repmat(legY - 0.75 * yStep, 1, 11), ... 
+   %    {'0', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1'}, ... 
+   %    'HorizontalAlignment','center','color',[0,0,0], 'FontSize',14);
+   
+  % For 0.5 to 1 
+  xIndices = round(linspace(1, length(legLim), 6)); % 6 even axes
+  text(legLim(xIndices), repmat(legY - 0.75 * yStep, 1, 6), ... 
+       {'0.5', '0.6', '0.7', '0.8', '0.9', '1.0'}, ... 
+       'HorizontalAlignment','center','color',[0,0,0], 'FontSize',14);
   
+  % Add the "correlatlion" label below the legend
+  text((legLim(xIndices(5)) + legLim(xIndices(6)))/2 - 0.1, legY - 1.3 * yStep, 'Correlation', 'FontSize',14)
+  % note that you can just drag the text if it doens't fit exactly right, 
 
 else
     nSegment=length(ii);

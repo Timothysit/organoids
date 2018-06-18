@@ -35,6 +35,9 @@ addpath(genpath('/media/timothysit/Seagate Expansion Drive1/The_Mecp2_Project/fe
 % orgaoind project 
 addpath(genpath('/media/timothysit/Seagate Expansion Drive1/The_Organoid_Project')); 
 
+% figure2eps
+addpath(genpath('/media/timothysit/Seagate Expansion Drive1/The_Organoid_Project/figure2epsV1-3'));
+
 %% Set up some parameters
 
 fs = 25000; % sampling frequency
@@ -50,7 +53,7 @@ gridTraceVtwo(electrodeMatrix, 1000) % note that it is rotated for mecp2/organoi
 
 %% specific electrode plot 
 % this can actually be done with a polished makeTrace function
-electrodeNum = 6;
+electrodeNum = 41;
 singleTrace = filteredMatrix(:, electrodeNum);
 
 figure
@@ -63,12 +66,17 @@ xLength = yLength * 5;
 set(gcf, 'Position', [100 100 xLength yLength])
 
 % adjust y and x axis to make a bit of room for my scale bar 
-yOffset = 1;
-ylim([min(electrodeMatrix(:, electrodeNum)) - yOffset, max(electrodeMatrix(:, electrodeNum))])
+% yOffset = 1;
+% ylim([min(electrodeMatrix(:, electrodeNum)) - yOffset, max(electrodeMatrix(:, electrodeNum))])
 
-xOffset = 100000; 
-xlim([1 - xOffset, length(singleTrace)])
+% xOffset = 100000; 
+% xlim([1 - xOffset, length(singleTrace)])
 
+
+% this was for electrode 34
+% sb.Position = [-100000 -744.5];
+% sb.YLen = 5; 
+% sb.XLen = 1000000 (40 seconds);
 removeAxis 
 sb = scalebar; 
 sb.YLen = 5; 
@@ -76,6 +84,17 @@ sb.XLen = 1000000;
 sb.YUnit = '\muV';
 sb.XUnit = 'seconds';
 sb.Position = [-100000 -744.5];
+
+
+% this is for 20180518 slice 7 recording 1 (full 600 seconds) 
+% need to think about whether ylim needs adjustment...
+removeAxis 
+sb = scalebar; 
+sb.YLen = 10; 
+sb.XLen = 1000000; 
+sb.YUnit = '\muV';
+sb.XUnit = 's';
+sb.Position = [0, -18];
 
 %% Convert X-axis to seconds to comapre with raster plot 
 timeBins = 5; % 5 second separation between marks
@@ -88,7 +107,8 @@ method = 'Manuel';
 % method = 'cwt';
 multiplier = 6;
 L = 0; 
-timeRange = 1: 600 * fs;
+timeRange = 1: fs * 600;
+% timeRange = 110 * fs: 185 * fs -1;
 [spikeMatrix, filteredMatrix] = getSpikeMatrix(electrodeMatrix(timeRange, :), method, multiplier, L);
 
 %% Positive threhsold for artefact removal 
@@ -143,7 +163,7 @@ set(gca, 'FontSize', 14)
 
 %% Raster plot
 
-
+gridTrace
 
 
 %% Heatmap raster plot! 
@@ -170,7 +190,7 @@ ylabel('Electrode')
 xlabel('Time (s)')
 cb = colorbar;
 % ylabel(cb, 'Spike count')
-ylabel(cb, 'Spike rate (Hz)') 
+ylabel(cb, 'Spike Frequency (Hz)') 
 cb.TickDirection = 'out';
 % cb.Ticks = 0:5; % for slice 5 specifically
 set(gca,'TickDir','out'); 
@@ -183,7 +203,7 @@ set(h, 'AlphaData', ~isnan(downSpikeMatrix')) % for NaN values
 
 timeBins = 5; % 5 second separation between marks
 % timePoints = 1:timeBins:floor(length(spikeMatrix) / fs); 
-timePoints = 0:5:floor(length(spikeMatrix) / fs); 
+timePoints = 0:20:floor(length(spikeMatrix) / fs); 
 yticks([1, 10:10:60])
 xticks(timePoints); 
 xticklabels(string(timePoints * 5));
@@ -258,13 +278,13 @@ sb.XLen = 20;
 sb.Position = [2 -60];
 xlim([1, 200])
 
-%% Version 2 of plot detected spike waveform 
+%% Supplementary figure: Version 2 of plot detected spike waveform 
 % the visual effect I want to go for here is transparent individual spikes 
 % and then a thick mean waveform
 figure
-% timeRange = 135 * fs : 185 * fs; % use 1:length(spikeMatrix) for all
-timeRange = 1:length(spikeMatrix); 
-electrodeNum = 48;
+timeRange = 135 * fs : 185 * fs; % use 1:length(spikeMatrix) for all
+% timeRange = 1:length(spikeMatrix); 
+electrodeNum = 45;
 trace = filteredMatrix(timeRange, electrodeNum);
 spikeTrain = spikeMatrix(timeRange, electrodeNum); 
 durationInSec = 0.009; 
@@ -284,8 +304,10 @@ sb.XUnit = 'ms';
 sb.XLen = 20; % note that this is in frames, need to manually convert to ms
 sb.Position = [2 -20];
 xlim([1, 200])
-ylim([-35, 20])
-
+% ylim([-35, 20]) % not sure which file this is for 
+ylim([-45 45]) % this is for 0413 slice 4 drop then TTX electrode 45
+sb.Position = [55 -40]; 
+xlim([50 150])
 % direct export eps to make the transparency work 
 print(gcf, '-opengl','-depsc', '-r600', '/media/timothysit/Seagate Expansion Drive1/The_Organoid_Project/avespike_20180518_slice7_record1_electrode34.eps')
 
@@ -293,6 +315,47 @@ print(gcf, '-opengl','-depsc', '-r600', '/media/timothysit/Seagate Expansion Dri
 % (ie. the mean trace won't be placed on top of the gray traces properly
 % for some reason)
 
+%% Supplementary figure: Version 2 of plot detected spike waveform (20180518 slice 7 recording 1 e41)
+% the visual effect I want to go for here is transparent individual spikes 
+% and then a thick mean waveform
+figure
+timeRange = 215 * fs : 335 * fs; % use 1:length(spikeMatrix) for all
+% timeRange = 1:length(spikeMatrix); 
+electrodeNum = 41;
+trace = filteredMatrix(timeRange, electrodeNum);
+spikeTrain = spikeMatrix(timeRange, electrodeNum); 
+durationInSec = 0.009; 
+% plotSpikeWave(trace, spikeTrain, 'peak', fs, durationInSec)
+[spikeWaves, averageSpikes] = spikeAlignment(trace, spikeTrain, fs, durationInSec); 
+plotSpikeAlignment(spikeWaves, 'peakghost', fs, 0.008); % note that input here has to be shorter than durationInSec
+aesthetics 
+lineThickness(2)
+removeAxis 
+yLength = 300; 
+xLength = yLength * 21/9;
+set(gcf, 'Position', [100 100 xLength yLength])
+sb = scalebar; 
+sb.YLen = 10;
+sb.YUnit = '\muV';
+sb.XUnit = 'ms';
+sb.XLen = 20; % note that this is in frames, need to manually convert to ms
+sb.Position = [2 -20];
+% xlim([1, 200])
+% ylim([-35, 20]) % not sure which file this is for 
+ylim([-25 25]) % this is for 0413 slice 4 drop then TTX electrode 45
+sb.Position = [60 -20]; 
+xlim([50 150])
+% direct export eps to make the transparency work 
+% print(gcf, '-opengl','-depsc', '-r600', '/media/timothysit/Seagate Expansion Drive1/The_Organoid_Project/figures/paper_figures_first_draft/0615_newfigs/0518_s7_r1_e41_aveSpike_215to335.eps')
+
+% print(gcf, '-painters',  '-depsc', '/media/timothysit/Seagate Expansion Drive1/The_Organoid_Project/figures/paper_figures_first_draft/0615_newfigs/0518_s7_r1_e41_aveSpike_215to335try4.eps')
+% figure2eps(gcf, '/media/timothysit/Seagate Expansion Drive1/The_Organoid_Project/figures/paper_figures_first_draft/0615_newfigs/0518_s7_r1_e41_aveSpike_215to335try7.eps', '-depsc', '-opengl')
+
+print(gcf, '-opengl', '-dsvg', '-r600', '/media/timothysit/Seagate Expansion Drive1/The_Organoid_Project/figures/paper_figures_first_draft/0615_newfigs/0518_s7_r1_e41_aveSpike_215to335_dsvg.eps')
+
+% note that if you use the menu to export as eps, transparency won't work.
+% (ie. the mean trace won't be placed on top of the gray traces properly
+% for some reason)
 
 
 %% Superimpose electrodes 
@@ -439,6 +502,48 @@ aesthetics
 removeAxis 
 % scalebar
 
+%% Figure 1: Plot raster DOTS below the spikes (20180615)
+
+electrodeToUse = 41;
+% time range 1: 215 - 335 (120 seconds) 
+% for this, the scale bar should be 5 by 200000 (8 seconds) 
+% time ragne 2: 275 - 280 (5 seconds)
+% for this, the scale bar should be 5 by 0.4 * fs (400ms)
+
+figure
+subplot(10, 1, 1:9) 
+filteredVec = filteredMatrix(:, electrodeToUse);
+plot(filteredVec); 
+% xlim([1, length(filteredVec)]) % have no idea why matlab doesn't do this by default
+yLength = 350; 
+xLength = yLength * 5;
+set(gcf, 'Position', [100 100 xLength yLength])
+
+aesthetics
+removeAxis 
+% scalebar
+sb = scalebar; 
+sb.YLen = 5; 
+sb.XLen = 8 * fs; 
+sb.YUnit = '\muV';
+sb.XUnit = 's';
+% sb.Position = [150 * fs + 10, -19];
+sb.Position = [215 * fs + 10, -19]; 
+
+
+
+subplot(10, 1, 10)
+spikeVec = spikeMatrix(:, electrodeToUse); 
+singleRastPlot(spikeVec, 'dot')
+
+
+% specify time range 
+xlim([215 * fs, 335 * fs])
+linkaxes
+
+% text(215 * fs + 10, -19, '5\muV', 'Rotation', 90)
+% text(315 * fs + 10, -19, '400 ms', 'Rotation', 0)
+
 
 %% Combine pre and post TTX rasterplots 
 
@@ -446,7 +551,7 @@ removeAxis
 % postTTXspike : slice 5 145 - 225 sec
 % TTXNaN : the middle period (115 - 145) are all NaN values 
 
-TTXNaN = NaN(30 *fs, 60); 
+TTXNaN = NaN(30 * fs, 60); 
 
 fullSpikeMatrix = [preTTXspike; TTXNaN; postTTXspike];
 
@@ -477,7 +582,7 @@ end
 aesthetics 
 removeAxis 
 
-%% Single trace paper specific parameters 
+%% Supplementary figure: Single trace paper specific parameters 
 
 % 20180518 slice 7 recording 1 
 % electrode 34 
@@ -566,14 +671,14 @@ set(gcf, 'Position', [100 100 xLength yLength])
 sb = scalebar; 
 sb.YUnit = '\muV'; 
 sb.XUnit = 'ms'; 
-sb.YLen = 40; 
-sb.XLen = 4000;
+sb.YLen = 50; 
+sb.XLen = 12500;
 
 
 
 % plot individual traces 
 figure 
-plot(filteredMatrix(burstStart * fs : burstEnd * fs, 2))
+plot(filteredMatrix(burstStart * fs : burstEnd * fs, 58))
 xlim([1, length(burstMatrix)])
 ylim([-100, 150])
 aesthetics 
@@ -609,6 +714,79 @@ artefactStart = round(76.7 * fs);
 artefactEnd = round(77.2 * fs); 
 
 spikeMatrix(artefactStart:artefactEnd, :) = 0;
+
+%% Supp fig 4: only pre-TTX raster plot 
+
+% data: 0413 slice 4 drop then TTX 
+% media drop time: 100 - 110 seconds
+% TTX drop time: 185 - 190 seconds (but can make it 185 - 195 seconds
+% Therefore, I will make a rasster plot from 115 - 185 seconds 
+
+figure 
+
+preTTXspikeMatrix = spikeMatrix(115 * fs: 185 * fs - 1, :);
+% makeHeatMap(preTTXspikeMatrix, 'rate')
+% set(gcf, 'Position', [100, 100, 800, 800 * 1])
+
+recordDuration = length(preTTXspikeMatrix) / fs;
+downSpikeMatrix = downSampleSum(preTTXspikeMatrix, recordDuration * 1/5); 
+
+% Delete certan time points and replace with NA 
+% For media drop / TTX drop purpose 
+% deleteTime = [21 22, 38,39]; % note that these are in time bins for slice
+% 4 
+% deleteTime = [23 24]; % TTX drop time for slice 5
+% downSpikeMatrix(deleteTime, :) = NaN; 
+
+% h = imagesc(downSpikeMatrix'); 
+
+% alternative raster plot that uses frequency rather than spike count
+
+h = imagesc(downSpikeMatrix' ./5); 
+
+aesthetics 
+ylabel('Electrode') 
+xlabel('Time (s)')
+cb = colorbar;
+% ylabel(cb, 'Spike count')
+ylabel(cb, 'Spike Frequency (Hz)') 
+cb.TickDirection = 'out';
+% cb.Ticks = 0:5; % for slice 5 specifically
+set(gca,'TickDir','out'); 
+cb.Location = 'Southoutside';
+cb.Box = 'off';
+set(gca, 'FontSize', 14)
+
+
+set(h, 'AlphaData', ~isnan(downSpikeMatrix')) % for NaN values
+
+timeBins = 5; % 5 second separation between marks
+% timePoints = 1:timeBins:floor(length(spikeMatrix) / fs); 
+timePoints = 0:2:floor(length(preTTXspikeMatrix) / fs); 
+yticks([1, 10:10:60])
+xticks(timePoints); 
+xticklabels(string(timePoints * 5));
+% xticklabels(string(timePoints -1 ));
+
+yLength = 800; 
+xLength = yLength * 1; 
+set(gcf, 'Position', [100 100 xLength yLength])
+
+%% Some custome code for pre-TTX (20180615)
+% assume raster plot first generated in the raster plot section 
+% raster plot from 115 - 185 seconds, or 135 - 185 
+
+preTTXspikeMatrix = spikeMatrix(135 * fs: 195 * fs, :);
+
+
+
+yLength = 800; 
+xLength = yLength * 1; 
+set(gcf, 'Position', [100 100 xLength yLength])
+
+
+timePoints = 0:10:floor(length(spikeMatrix) / fs); 
+
 
 %% Paper figure: pre and post-TTX drop 
 
@@ -693,11 +871,11 @@ sem = [std(ratePreTTX) / sqrt(length(ratePreTTX)), 0];
 g = gramm('x', {'pre-TTX', 'post-TTX'}, 'y', [mean(ratePreTTX), mean(ratePostTTX)], ... 
     'ymax', [mean(ratePreTTX), mean(ratePostTTX)] + sem, ... 
     'ymin', [mean(ratePreTTX), mean(ratePostTTX)] - sem);
-g.set_names('x', '', 'y', 'Spike rate (Hz)')
+g.set_names('x', '', 'y', 'Spike Frequency (Hz)')
 g.geom_bar();
 figure('Position',[100 100 800 800]);
 g.set_text_options('base_size', 14)
-g.axe_property('TickDir','out', 'YLim', [0 0.1])
+g.axe_property('TickDir','out', 'YLim', [-0.005, 0.1])
 g.set_order_options('x', 0) % change the order of the bar plot 
 g.set_color_options('map','d3_10')
 
@@ -780,5 +958,95 @@ sb.YLen = 20;
 sb.XLen = 25;
 sb.Position = [135.09*fs, -55]; 
 
+%% Paper figure: 20180503 slice 1 recording 2 network burst 
 
+% network spikek candidate 1: 236 - 237.5
+% or the network spike from 237.20 - 237.23
+
+% candidate 2: 294.9 - 295.1, or maybe 294.99 - 295.05
+
+% candidate 3: network spike at 356.73 - 356.745
+
+burstStart = 356.732; 
+burstEnd = 356.743;
+burstMatrix = filteredMatrix(burstStart * fs : burstEnd * fs, :); 
+
+figure 
+gridTrace(burstMatrix, 1)
+linkaxes
+
+% let's try tight subplot for the gridTrace
+
+figure 
+gridTrace(burstMatrix, 1, [], 'tight', 1)
+linkaxes
+
+yLength = 600; 
+xLength = yLength * 1.5;
+set(gcf, 'Position', [100 100 xLength yLength])
+
+% limits 
+ylim([-50 20])
+xlim([95 180])
+
+% add a scalebar 
+sb = scalebar; 
+sb.YUnit = '\muV'; 
+sb.XUnit = 'ms'; 
+sb.YLen = 50; 
+sb.XLen = 12500;
+
+
+% plot individual traces 
+figure 
+plot(filteredMatrix(burstStart * fs : burstEnd * fs, 58))
+xlim([1, length(burstMatrix)])
+ylim([-100, 150])
+aesthetics 
+removeAxis 
+yLength = 400; 
+xLength = yLength * 21 / 9;
+set(gcf, 'Position', [100 100 xLength yLength])
+sb = scalebar; 
+sb.YUnit = '\muV'; 
+sb.XUnit = 'ms'; 
+sb.YLen = 40; 
+sb.Position = [100, -75];
+
+%% Paper Figure 1: Single electrode trace, with raster plot on top 
+
+% data used: 0503 slice 1 recording 2 electrode 7 
+% data was first filtered 
+
+electrodeNum = 7; 
+timeRange = 1: 720 * fs; % use 1:length(spikeMatrix) for all
+data = electrodeMatrix(timeRange, electrodeNum);
+
+[spikeTrain, finalData, threshold] = detectSpikes(data, 'Manuel', 6);
+figure
+ax1 = subplot(100, 1, [1 20]);
+singleRastPlot(spikeTrain) 
+% numSpike = sum(spikeTrain);
+% title(['Manuel: Butterworth, mean - 5SD, 2.0ms RP,' s num2str(numSpike) s 'spikes'])
+ax2 = subplot(100, 1, [21 100]); 
+plot(finalData); 
+% threshold 
+% hold on; 
+% plot([1 length(data)], [threshold threshold], '-')
+aesthetics()
+removeAxis()
+xlim([1 length(data)])
+linkaxes([ax1, ax2], 'x')
+
+
+yLength = 400; 
+xLength = yLength *  3;
+set(gcf, 'Position', [100 100 xLength yLength])
+
+sb = scalebar; 
+sb.Position = [0, -40];
+sb.XLen = 1000000; % 40 seconds
+sb.YLen = 10; 
+sb.XUnit = 'seconds'; 
+sb.YUnit = '\muV'; 
 

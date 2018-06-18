@@ -43,8 +43,8 @@ function gridTrace(electrodeMatrix, downFactor, removeElectrode, option, scaleb)
         option = []; 
     end 
     
-     if ~exist('scalebar')
-        scalebar = 0; 
+     if ~exist('scaleb')
+        scaleb = 0; 
     end 
     
         
@@ -129,11 +129,12 @@ function gridTrace(electrodeMatrix, downFactor, removeElectrode, option, scaleb)
        for plotN = 1:size(electrodeMatrix, 2)
            axes(ha(pL(plotN))); 
            plot(trace(:, plotN))
-           title(num2str(plotN))
+           % title(num2str(plotN))
            xlim([1 length(trace)]) % this makes the plot xlim proper!
            % title(num2str(plotN))
            aesthetics()
            removeAxis()
+           lineThickness(3)
            hold on
        end 
        % linkaxes() % to make them have the same x and y limits
@@ -151,19 +152,20 @@ function gridTrace(electrodeMatrix, downFactor, removeElectrode, option, scaleb)
        subplot(numRow, numColumn, 64)
        linkaxes
        sb = scalebar;
-       sb.YLen = 100; 
-       sb.XLen = 7500; 
+       sb.YLen = 50; 
+       sb.XLen = 12500; 
        sb.YUnit = '\muV';
        sb.XUnit = 'ms'; 
        sb.Position = [6000, -80];
-   elseif scaleb == 1 && strcmp(option, 'right')
+   elseif scaleb == 1 && strcmp(option, 'tight')
        axes(ha(64))
        sb = scalebar;
-       sb.YLen = 100; 
-       sb.XLen = 7500; 
+       % sb.YLen = 50; 
+       % sb.XLen = 12500; 
        sb.YUnit = '\muV';
        sb.XUnit = 'ms'; 
-       sb.Position = [8000, -60];
+       % sb.Position = [8000, -60];
+       sb.YLen = 30; sb.XLen = 50; sb.Position = [110 -20]
    end 
    
 end 
