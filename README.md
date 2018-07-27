@@ -24,9 +24,7 @@ This includes:
 
 All analysis were performed using `MATLAB`, and the main scripts used for analysis are `ogranoidProject.m` for spike detection, and `organoidCorrelation` for analysis of functional connectivity. 
 
-Most visualisations were performed using `MATLAB`, with the exception of the network plot, which was made using the `R` interface for `igraph`. The code for this is available in the folder `R_analysis`. Some of these figures were then further polished in Adobe Illustrator. 
-
-
+Most visualisations were performed using `MATLAB`, with the exception of the network plot, which was made using the `R` interface for `igraph`. The code for this is available in the folder `R_analysis`. Placement of scale bars and legends for some plots were adjusted in Adobe Illustrator.
 
 
 
