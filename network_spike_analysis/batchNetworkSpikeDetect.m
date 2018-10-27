@@ -7,7 +7,7 @@ and saves a table summarising the results
 % Last update: 20181027 
 
 % LOG 
-% 20181027: Adding jitter method (in progress)
+% 20181027: Added jitter method 
 
 INPUT 
 folderPath     | Path containing the spike files (.mat) you want to analyse 
