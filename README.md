@@ -2,7 +2,7 @@
 
 This repository contains the code used for the microelectrode array (MEA) data analysis in the paper: 
 
-**Cerebral organoids at the air-liquid interface generate diverse nerve tracts with functional output**
+[**Cerebral organoids at the air-liquid interface generate diverse nerve tracts with functional output**](https://www.nature.com/articles/s41593-019-0350-2)
 
 by 
 
